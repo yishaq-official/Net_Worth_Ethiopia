@@ -2,3 +2,4 @@ skills-lock.json
 .agents/*
 .claude/*
 node_modules/
+.env
