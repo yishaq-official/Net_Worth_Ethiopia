@@ -1,4 +1,4 @@
 skills-lock.json
-.agent/*
+.agents/*
 .claude/*
 node_modules/
