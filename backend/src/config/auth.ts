@@ -1,6 +1,9 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { expo } from "@better-auth/expo";
 import { db } from "./db.js";
+
+const frontendUrl = process.env.FRONTEND_URL || "http://localhost:8081";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg" }),
@@ -10,5 +13,8 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
-  trustedOrigins: process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : undefined,
+  plugins: [
+    expo(),
+  ],
+  trustedOrigins: [frontendUrl, "networth://"],
 });
