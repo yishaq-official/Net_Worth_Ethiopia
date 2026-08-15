@@ -19,7 +19,7 @@ export default function LoginScreen() {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.contentWrapper}>
           <View style={styles.headerContent}>
-            <View style={[styles.logoContainer, { backgroundColor: theme.background }]}>
+            <View style={[styles.logoContainer, { backgroundColor: '#FFFFFF' }]}>
               <Image 
                 source={require('@/assets/images/logo.png')} 
                 style={styles.logoImg}

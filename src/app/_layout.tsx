@@ -7,12 +7,14 @@ import AppTabs from '@/components/app-tabs';
 
 SplashScreen.preventAutoHideAsync();
 
+import { Stack } from 'expo-router';
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AnimatedSplashOverlay />
-      <AppTabs />
+      <Stack screenOptions={{ headerShown: false }} />
     </ThemeProvider>
   );
 }

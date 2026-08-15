@@ -1,16 +1,9 @@
 import { View, StyleSheet, ViewProps } from 'react-native';
-import { useTheme } from '@/hooks/use-theme';
 
 export function AuthCard({ children, style, ...rest }: ViewProps) {
-  const theme = useTheme();
-  
   return (
     <View 
-      style={[
-        styles.card, 
-        { backgroundColor: theme.background },
-        style
-      ]} 
+      style={[styles.card, style]} 
       {...rest}
     >
       {children}
@@ -20,6 +13,7 @@ export function AuthCard({ children, style, ...rest }: ViewProps) {
 
 const styles = StyleSheet.create({
   card: {
+    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     paddingVertical: 28,
     paddingHorizontal: 24,
