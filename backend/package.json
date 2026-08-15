@@ -14,12 +14,14 @@
   "description": "",
   "dependencies": {
     "better-auth": "^1.6.29",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
     "pg": "^8.23.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/node": "^26.2.0",
     "@types/pg": "^8.21.0",
     "drizzle-kit": "^0.31.10",
