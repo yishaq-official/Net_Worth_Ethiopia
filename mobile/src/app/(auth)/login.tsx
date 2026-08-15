@@ -8,6 +8,7 @@ import { AuthCard } from '@/components/auth/AuthCard';
 import { GoogleButton } from '@/components/auth/GoogleButton';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
+import { authClient } from '@/lib/auth-client';
 
 export default function LoginScreen() {
   const theme = useTheme();
@@ -33,7 +34,7 @@ export default function LoginScreen() {
           <AuthCard>
             <GoogleButton 
               title="Continue with Google" 
-              onPress={() => console.log('Login with Google')} 
+              onPress={() => authClient.signIn.social({ provider: 'google' })} 
               style={styles.button}
             />
 
