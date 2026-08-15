@@ -11,5 +11,8 @@
   "dependencies": {
     "better-auth": "^1.6.29",
     "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
   }
 }
