@@ -39,7 +39,7 @@ export default function LoginScreen() {
 
             <View style={styles.toggleContainer}>
               <ThemedText style={styles.toggleText}>Don't have an account? </ThemedText>
-              <Link href="/(auth)/signup" asChild>
+              <Link href={"/(auth)/signup" as any} asChild>
                 <Pressable>
                   <ThemedText type="linkPrimary" style={[styles.toggleLink, { color: theme.primary }]}>
                     Sign Up
