@@ -3,7 +3,9 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
+    "@better-auth/expo": "^1.6.29",
     "@expo/ui": "~57.0.10",
+    "better-auth": "^1.6.29",
     "expo": "~57.0.12",
     "expo-checkbox": "~57.0.0",
     "expo-constants": "~57.0.10",
@@ -14,6 +16,7 @@
     "expo-image": "~57.0.2",
     "expo-linking": "~57.0.5",
     "expo-router": "~57.0.12",
+    "expo-secure-store": "^57.0.1",
     "expo-splash-screen": "~57.0.6",
     "expo-status-bar": "~57.0.1",
     "expo-symbols": "~57.0.2",
