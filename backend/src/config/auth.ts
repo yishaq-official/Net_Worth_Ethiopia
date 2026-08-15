@@ -7,6 +7,15 @@ const frontendUrl = process.env.FRONTEND_URL || "http://localhost:8081";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg" }),
+  user: {
+    additionalFields: {
+      acceptedTerms: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+      },
+    },
+  },
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
