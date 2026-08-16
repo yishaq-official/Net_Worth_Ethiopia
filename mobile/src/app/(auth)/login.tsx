@@ -27,8 +27,8 @@ export default function LoginScreen() {
                 contentFit="contain"
               />
             </View>
-            <ThemedText type="title" style={styles.title}>Welcome Back</ThemedText>
-            <ThemedText style={styles.subtitle}>Securely log in to your account</ThemedText>
+            <ThemedText type="title" style={styles.title}>Welcome</ThemedText>
+            <ThemedText style={styles.subtitle}>Log in or sign up to continue</ThemedText>
           </View>
 
           <AuthCard>
@@ -37,17 +37,6 @@ export default function LoginScreen() {
               onPress={() => authClient.signIn.social({ provider: 'google' })} 
               style={styles.button}
             />
-
-            <View style={styles.toggleContainer}>
-              <ThemedText style={styles.toggleText}>Don't have an account? </ThemedText>
-              <Link href={"/(auth)/signup" as any} asChild>
-                <Pressable>
-                  <ThemedText type="linkPrimary" style={[styles.toggleLink, { color: theme.primary }]}>
-                    Sign Up
-                  </ThemedText>
-                </Pressable>
-              </Link>
-            </View>
           </AuthCard>
         </View>
       </SafeAreaView>
@@ -102,19 +91,5 @@ const styles = StyleSheet.create({
   },
   button: {
     marginBottom: 20,
-  },
-  toggleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  toggleText: {
-    fontSize: 14,
-    color: '#6B7280', // Text muted
-  },
-  toggleLink: {
-    fontSize: 14,
-    fontWeight: '700',
-    marginLeft: 4,
   },
 });
