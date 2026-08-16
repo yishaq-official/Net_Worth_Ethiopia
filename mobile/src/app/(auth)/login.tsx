@@ -1,8 +1,7 @@
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, router } from 'expo-router';
-import * as Linking from 'expo-linking';
 
 import { BackgroundGrid } from '@/components/auth/BackgroundGrid';
 import { AuthCard } from '@/components/auth/AuthCard';
@@ -11,8 +10,34 @@ import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import { authClient } from '@/lib/auth-client';
 
+const signupMessage =
+  "That Google account does not have a NetWorth account yet. Please register first and accept the terms before logging in.";
+
 export default function LoginScreen() {
   const theme = useTheme();
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: '/',
+        errorCallbackURL: `/(auth)/signup?message=${encodeURIComponent(signupMessage)}`,
+        newUserCallbackURL: `/(auth)/signup?message=${encodeURIComponent(signupMessage)}`,
+      });
+
+      if (error) {
+        router.replace({
+          pathname: '/(auth)/signup',
+          params: { message: signupMessage },
+        });
+      }
+    } catch {
+      router.replace({
+        pathname: '/(auth)/signup',
+        params: { message: signupMessage },
+      });
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -28,19 +53,25 @@ export default function LoginScreen() {
                 contentFit="contain"
               />
             </View>
-            <ThemedText type="title" style={styles.title}>Welcome</ThemedText>
-            <ThemedText style={styles.subtitle}>Log in or sign up to continue</ThemedText>
+            <ThemedText type="title" style={styles.title}>Welcome Back</ThemedText>
+            <ThemedText style={styles.subtitle}>Log in to continue to NetWorth</ThemedText>
           </View>
 
           <AuthCard>
             <GoogleButton 
-              title="Continue with Google" 
-              onPress={() => authClient.signIn.social({ 
-                provider: 'google',
-                callbackURL: Linking.createURL('/')
-              })} 
+              title="Log in with Google" 
+              onPress={handleGoogleLogin} 
               style={styles.button}
             />
+
+            <View style={styles.footer}>
+              <ThemedText style={styles.footerText}>Don't have an account? </ThemedText>
+              <Link href="/(auth)/signup" asChild>
+                <TouchableOpacity>
+                  <ThemedText style={[styles.linkText, { color: theme.primary }]}>Sign up</ThemedText>
+                </TouchableOpacity>
+              </Link>
+            </View>
           </AuthCard>
         </View>
       </SafeAreaView>
@@ -95,5 +126,18 @@ const styles = StyleSheet.create({
   },
   button: {
     marginBottom: 20,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  footerText: {
+    fontSize: 14,
+  },
+  linkText: {
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });

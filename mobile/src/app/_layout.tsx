@@ -26,21 +26,13 @@ export default function TabLayout() {
         router.replace('/(auth)/login');
       }
     } else {
-      // User is logged in, check if terms are accepted
-      const checkTerms = async () => {
-        const user = session.user as any;
-        
-        if (user && !user.acceptedTerms) {
-          // Did not pre-accept, send to terms screen if not already there
-          if (segments[1] !== 'terms') {
-            router.replace('/(auth)/terms');
-          }
-        } else if (inAuthGroup) {
+      if (inAuthGroup) {
+        if (segments[1] === 'signup-success') {
+          // Let signup-success do its thing and then redirect
+        } else {
           router.replace('/');
         }
-      };
-      
-      checkTerms();
+      }
     }
   }, [session, isPending, segments]);
 
