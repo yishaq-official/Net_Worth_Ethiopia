@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, router, useLocalSearchParams } from 'expo-router';
+import * as Linking from 'expo-linking';
 import Checkbox from 'expo-checkbox';
 
 import { BackgroundGrid } from '@/components/auth/BackgroundGrid';
@@ -28,7 +29,7 @@ export default function SignupScreen() {
       const { error } = await authClient.signIn.social({
         provider: 'google',
         requestSignUp: true,
-        callbackURL: '/signup-success',
+        callbackURL: Linking.createURL('/signup-success'),
       });
 
       if (error) {
@@ -71,7 +72,11 @@ export default function SignupScreen() {
 
           <AuthCard>
             <View style={styles.noticeBox}>
-              <ThemedText style={styles.noticeText}>{notice}</ThemedText>
+              <ThemedText style={styles.noticeEyebrow}>Registration required</ThemedText>
+              <ThemedText style={styles.noticeTitle}>Google account not registered yet</ThemedText>
+              <ThemedText style={styles.noticeText}>
+                {notice}
+              </ThemedText>
             </View>
 
             <View style={styles.checkboxContainer}>
@@ -156,15 +161,33 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   noticeBox: {
-    backgroundColor: 'rgba(255,255,255,0.8)',
+    backgroundColor: 'rgba(255,255,255,0.92)',
     borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     marginBottom: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(17,24,39,0.08)',
+  },
+  noticeEyebrow: {
+    fontSize: 11,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    fontWeight: '700',
+    color: '#6B7280',
+    marginBottom: 4,
+  },
+  noticeTitle: {
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: '700',
+    marginBottom: 6,
+    color: '#111827',
   },
   noticeText: {
     fontSize: 13,
     lineHeight: 18,
+    color: '#374151',
   },
   checkboxContainer: {
     flexDirection: 'row',
