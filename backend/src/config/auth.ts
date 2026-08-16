@@ -6,6 +6,7 @@ import { db } from "./db.js";
 const frontendUrl = process.env.FRONTEND_URL || "http://localhost:8081";
 
 export const auth = betterAuth({
+  baseURL: process.env.BASE_URL || "http://localhost:3000",
   database: drizzleAdapter(db, { provider: "pg" }),
   user: {
     additionalFields: {

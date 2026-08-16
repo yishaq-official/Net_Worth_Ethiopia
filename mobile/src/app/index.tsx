@@ -28,8 +28,11 @@ function getDevMenuHint() {
   );
 }
 
-import { Redirect } from 'expo-router';
-
 export default function HomeScreen() {
-  return <Redirect href={"/(auth)/login" as any} />;
+  return (
+    <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ThemedText type="title">Welcome to NetWorth</ThemedText>
+      <ThemedText>Dashboard coming soon!</ThemedText>
+    </SafeAreaView>
+  );
 }

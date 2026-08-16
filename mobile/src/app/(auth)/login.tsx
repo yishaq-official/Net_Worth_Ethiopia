@@ -2,6 +2,7 @@ import { View, StyleSheet, Pressable } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, router } from 'expo-router';
+import * as Linking from 'expo-linking';
 
 import { BackgroundGrid } from '@/components/auth/BackgroundGrid';
 import { AuthCard } from '@/components/auth/AuthCard';
@@ -34,7 +35,10 @@ export default function LoginScreen() {
           <AuthCard>
             <GoogleButton 
               title="Continue with Google" 
-              onPress={() => authClient.signIn.social({ provider: 'google' })} 
+              onPress={() => authClient.signIn.social({ 
+                provider: 'google',
+                callbackURL: Linking.createURL('/')
+              })} 
               style={styles.button}
             />
           </AuthCard>
