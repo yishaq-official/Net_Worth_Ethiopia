@@ -3,7 +3,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useColorScheme } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
+import * as storage from '@/lib/storage';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { authClient } from '@/lib/auth-client';
@@ -32,11 +32,11 @@ export default function TabLayout() {
         const user = session.user as any;
         
         if (user && !user.acceptedTerms) {
-          const preAccepted = await SecureStore.getItemAsync('has_accepted_terms_pre_auth');
+          const preAccepted = await storage.getItem('has_accepted_terms_pre_auth');
           
           if (preAccepted === 'true') {
             await authClient.updateUser({ acceptedTerms: true } as any);
-            await SecureStore.deleteItemAsync('has_accepted_terms_pre_auth');
+            await storage.removeItem('has_accepted_terms_pre_auth');
             // If they are on an auth screen, send them home
             if (inAuthGroup) router.replace('/');
           } else {

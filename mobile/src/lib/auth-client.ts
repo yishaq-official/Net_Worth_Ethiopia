@@ -1,6 +1,6 @@
 import { createAuthClient } from "better-auth/react";
 import { expoClient } from "@better-auth/expo/client";
-import * as SecureStore from "expo-secure-store";
+import * as storage from "./storage";
 import { Platform } from "react-native";
 
 // In development, Android emulator needs 10.0.2.2 to access host localhost
@@ -14,7 +14,7 @@ export const authClient = createAuthClient({
     expoClient({
       scheme: "networth",
       storagePrefix: "networth",
-      storage: SecureStore,
+      storage: storage as any,
     }),
   ],
 });

@@ -11,7 +11,7 @@ import { GoogleButton } from '@/components/auth/GoogleButton';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import { authClient } from '@/lib/auth-client';
-import * as SecureStore from 'expo-secure-store';
+import * as storage from '@/lib/storage';
 
 export default function SignupScreen() {
   const theme = useTheme();
@@ -56,7 +56,7 @@ export default function SignupScreen() {
             <GoogleButton 
               title="Sign up with Google" 
               onPress={async () => {
-                await SecureStore.setItemAsync("has_accepted_terms_pre_auth", "true");
+                await storage.setItem("has_accepted_terms_pre_auth", "true");
                 authClient.signIn.social({ provider: 'google' });
               }} 
               disabled={!isChecked}
