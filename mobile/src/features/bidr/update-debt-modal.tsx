@@ -17,7 +17,6 @@ import {
   Edit3Icon,
   XIcon,
   CalendarIcon,
-  CheckIcon,
 } from '@/components/icons';
 import { BIDR_DUE_PRESETS } from '@/constants/bidr';
 import type { DebtItem, UpdateDebtPayload } from '@/types/bidr';

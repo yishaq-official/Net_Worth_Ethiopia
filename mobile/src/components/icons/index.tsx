@@ -1,4 +1,3 @@
-import React from 'react';
 import Svg, { Path, Circle, Rect, Polyline, Line } from 'react-native-svg';
 
 export interface IconProps {

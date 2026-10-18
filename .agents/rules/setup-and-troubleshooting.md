@@ -7,6 +7,7 @@
   - `npm run android` in `mobile/` runs `scripts/run-android.js` which automatically maintains this port reversal.
   - Run `npm run reverse` in `mobile/` if USB is reconnected.
 
+
 ## Backend Database
 - PostgreSQL is used with Drizzle ORM.
 - Tables include `user`, `account`, `session`, `verification`, `business`, `branch`, `sale`, and `expense`.
