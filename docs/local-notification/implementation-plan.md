@@ -136,22 +136,26 @@ Immediately inform the merchant when a bank payment notification (Telebirr, CBE 
 
 ---
 
-### Phase 5: Resilience Bubbles & Sales Milestones
+### Phase 5: Resilience Bubbles & Header Sync `[COMPLETED]`
 
 #### Objective
-Deliver non-intrusive status feedback for offline sync queues and celebrate business revenue accomplishments.
+Deliver non-intrusive status feedback for offline sync queues with real-time reactive counts and automated completion alerts.
 
 #### Tasks
-1. **Offline Queue Sync Bubble**:
-   - Read `pendingCount` from `useNetworkSync()`.
-   - Update `SyncStatusBadge` in `hamburger-drawer.tsx` to render a blue badge bubble with the count of pending updates.
-   - On network reconnection and successful sync completion: display a subtle toast *"All 14 offline records synced to cloud."*
-2. **Sales Target Milestones (`sales-milestone.service.ts`)**:
-   - When a new sale is logged in `useSalesStore`:
-   - Calculate today's gross sales revenue.
-   - If daily sales crosses milestone tiers (e.g., 10,000 ETB, 25,000 ETB, 50,000 ETB, 100,000 ETB):
-     - Trigger in-app toast banner: *"🎉 Milestone Reached! Daily sales exceeded 25,000 ETB."*
-     - Log milestone tier in SQLite to prevent repeating the same tier on the same day.
+1. [x] **Real-time Outbox Event Bus (`sync-engine.ts` & `sync-queue.repo.ts`)**:
+   - Added `onQueueChangeListener` in `syncQueueRepo` to trigger immediate updates whenever records are queued or cleared offline.
+   - Forwarded `pushedCount` on `sync_success` events from `SyncEngine`.
+2. [x] **Offline Queue Sync Bubble (`sync-status-badge.tsx`)**:
+   - Renders live `pendingCount` with clean numeric bubble and `99+` overflow cap.
+   - Offline mode: Amber bubble (`#D97706`) with `WifiOff` icon.
+   - Pending online mode: Blue bubble (`#2563EB`) with `CloudUpload` icon.
+   - Syncing mode: Emerald bubble (`#059669`) with `RefreshCw` icon.
+   - Connected & synced: Clean minimalist `Wifi` icon.
+3. [x] **Reconnection Completion Toast (`use-network-sync.ts`)**:
+   - On network reconnection and successful sync completion: automatically displays toast:
+     *"Offline Sync Complete: All X offline updates synced to cloud."*
+4. [-] **Sales Target Milestones**:
+   - Deferred per user instruction to focus exclusively on operational reliability.
 
 ---
 
