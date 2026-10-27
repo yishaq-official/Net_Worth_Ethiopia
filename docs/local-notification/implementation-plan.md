@@ -71,21 +71,26 @@ Configure native Android channels, request user permissions, and initialize `exp
 
 ---
 
-### Phase 2: In-App Toast & Floating Banner Pipeline
+### Phase 2: In-App Toast & Floating Banner Pipeline `[COMPLETED]`
 
 #### Objective
 Provide a unified, highly aesthetic slide-down toast banner for instant foreground alerts (e.g. when an SMS payment arrives while the app is active).
 
 #### Tasks
-1. **Zustand Toast Store (`toast-store.ts`)**:
+1. [x] **Zustand Toast Store (`toast-store.ts`)**:
    - State: `activeToast: ToastPayload | null`
    - Actions: `showToast(payload)`, `dismissToast()`.
-   - Auto-dismiss timer: 5,000ms with manual dismissal support.
-2. **In-App Toast Component (`in-app-toast.tsx`)**:
+   - Auto-dismiss timer: default 5,000ms with manual dismissal support and programmatic clear.
+2. [x] **In-App Toast Hook (`use-in-app-toast.ts`)**:
+   - Created hook and standalone helpers `showInAppToast` and `dismissInAppToast`.
+3. [x] **In-App Toast Component (`in-app-toast.tsx`)**:
    - Mounted in `mobile/src/app/_layout.tsx`.
-   - Slides down from top with smooth spring animation (`react-native-reanimated`).
+   - Slides down from top with smooth spring animation, swipe-up to dismiss, and safe area insets.
    - Supports 4 variants: `payment` (emerald), `warning` (amber), `milestone` (purple/gold), `info` (blue).
-   - Includes 1-tap action button (e.g. *"View & Book"*) that triggers deep-link navigation.
+   - Includes 1-tap action button (e.g. *"View & Book"*) that executes callback and auto-dismisses banner.
+   - Renders amount highlights and transaction reference chips.
+4. [x] **Icon Library Extension (`icons/index.tsx`)**:
+   - Added `AwardIcon` and `InfoIcon` with `SafeSvg` fallback.
 
 ---
 
