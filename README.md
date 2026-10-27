@@ -236,8 +236,8 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/networth_db
 BETTER_AUTH_SECRET=your_secure_random_secret_string
 BETTER_AUTH_URL=http://localhost:3000
 WEB_URL=http://localhost:3001
-ADMIN_EMAIL=admin1g@gmail.com
-ADMIN_PASSWORD=admin1234
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
 ```
 
 Initialize the database schema and seed the administrator account:
