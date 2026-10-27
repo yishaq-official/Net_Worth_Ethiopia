@@ -117,22 +117,22 @@ Alert the merchant to customer debts that are due today or overdue, both in the 
 
 ---
 
-### Phase 4: Inbound Bank SMS Immediate Notification Pipeline
+### Phase 4: Inbound Bank SMS Immediate Notification Pipeline `[COMPLETED]`
 
 #### Objective
 Immediately inform the merchant when a bank payment notification (Telebirr, CBE Birr, Awash, BOA, Dashen) is received.
 
 #### Tasks
-1. **Hook into SMS Ingestion Pipeline**:
-   - In `mobile/src/store/text-fetching-store.ts` or native receiver listener:
-   - When a new whitelisted SMS is successfully parsed:
-     1. If app is in foreground: Dispatch an In-App Toast banner:
-        - Title: *"Payment Detected: Telebirr"*
-        - Message: *"Received 450.00 ETB from Dawit Tadesse"*
-        - Action: *"Book Sale"* (opens sales conversion modal).
-     2. If app is backgrounded: Dispatch local system tray notification via `payment_alerts` channel.
-2. **Deep-Linking**:
-   - Tapping the notification automatically routes to `/text-fetching` with the specific transaction pre-highlighted.
+1. [x] **Hook into SMS Ingestion Pipeline**:
+   - Extended `localSmsRepo.insertOrIgnoreBatchWithResults(...)` to track newly inserted transactions with SQLite `INSERT OR IGNORE`.
+   - Wired `smsNotificationService.notifyNewlyDiscoveredTransactions(...)` into `textFetchingService.scanAndProcessInbox(...)`.
+2. [x] **Notification & Toast Dispatch (`sms-notification.service.ts`)**:
+   - If app is in foreground: Dispatches an In-App Toast banner with emerald payment variant, provider pill (e.g. `Telebirr`, `CBE / CBEBirr`), amount chip, reference chip, and *"View & Book"* action.
+   - Dispatches a local system tray notification via `NOTIFICATION_CHANNELS.PAYMENT_ALERTS.id` (max importance, vibration, sound).
+   - Groups multi-transaction batch arrivals into a clean summary banner.
+3. [x] **Deduplication & Deep-Linking**:
+   - Uses `localNotificationLogRepo` with key `sms_notif_${transactionRef}` to guarantee zero duplicate alerts.
+   - Notification payload embeds `{ url: '/text-fetching', type: 'bank_sms', transactionId, ref }` for 1-tap navigation to the transaction booking screen.
 
 ---
 
