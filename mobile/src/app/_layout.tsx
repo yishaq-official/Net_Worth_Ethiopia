@@ -11,6 +11,7 @@ import { useBusinessStore } from '@/store/business-store';
 import { initLocalDatabase } from '@/db/migrations';
 import { useNetworkSync } from '@/hooks/use-network-sync';
 import { useLocalNotifications } from '@/hooks/use-local-notifications';
+import { InAppToast } from '@/components/common/in-app-toast';
 
 import { Platform, Text, TextInput } from 'react-native';
 import {
@@ -129,6 +130,7 @@ export default function TabLayout() {
     <ThemeProvider value={DefaultTheme}>
       <AnimatedSplashOverlay />
       <Stack screenOptions={{ headerShown: false }} />
+      <InAppToast />
     </ThemeProvider>
   );
 }

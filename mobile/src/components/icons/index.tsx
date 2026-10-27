@@ -421,4 +421,28 @@ export function CloudUploadIcon({ size = 18, color = '#2563EB', strokeWidth = 2 
   );
 }
 
+export function AwardIcon({ size = 20, color = '#7C3AED', strokeWidth = 2 }: IconProps) {
+  return (
+    <SafeSvg size={size} fallbackSymbol="★" fallbackColor={color}>
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+        <Circle cx="12" cy="8" r="7" />
+        <Polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+      </Svg>
+    </SafeSvg>
+  );
+}
+
+export function InfoIcon({ size = 20, color = '#2563EB', strokeWidth = 2 }: IconProps) {
+  return (
+    <SafeSvg size={size} fallbackSymbol="ℹ" fallbackColor={color}>
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+        <Circle cx="12" cy="12" r="10" />
+        <Line x1="12" y1="16" x2="12" y2="12" />
+        <Line x1="12" y1="8" x2="12.01" y2="8" />
+      </Svg>
+    </SafeSvg>
+  );
+}
+
+
 
