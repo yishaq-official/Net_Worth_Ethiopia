@@ -10,6 +10,7 @@ import { authClient } from '@/lib/auth-client';
 import { useBusinessStore } from '@/store/business-store';
 import { initLocalDatabase } from '@/db/migrations';
 import { useNetworkSync } from '@/hooks/use-network-sync';
+import { useLocalNotifications } from '@/hooks/use-local-notifications';
 
 import { Platform, Text, TextInput } from 'react-native';
 import {
@@ -69,6 +70,9 @@ export default function TabLayout() {
 
   // Background offline sync lifecycle watcher
   useNetworkSync();
+
+  // Local notification channels & permission initialization
+  useLocalNotifications();
 
   // Initialize local SQLite database schema and indexes on mount
   useEffect(() => {
