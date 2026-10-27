@@ -33,18 +33,21 @@ export const localSmsRepo = {
   /**
    * Batch inserts parsed bank SMS transactions using INSERT OR IGNORE.
    * Duplicate transaction_ref values are silently skipped by SQLite.
-   * Returns the count of newly inserted rows.
+   * Returns the count of newly inserted rows along with the inserted transaction objects.
    */
-  async insertOrIgnoreBatch(
+  async insertOrIgnoreBatchWithResults(
     transactions: ParsedBankTransaction[],
     businessId: string,
     branchId: string
-  ): Promise<number> {
-    if (!isSQLiteAvailable() || transactions.length === 0) return 0;
+  ): Promise<{ insertedCount: number; newlyInserted: ParsedBankTransaction[] }> {
+    if (!isSQLiteAvailable() || transactions.length === 0) {
+      return { insertedCount: 0, newlyInserted: [] };
+    }
     const db = await getDatabase();
 
     const now = new Date().toISOString();
     let insertedCount = 0;
+    const newlyInserted: ParsedBankTransaction[] = [];
 
     for (const txn of transactions) {
       // 1. Sanitize & validate required fields to prevent SQLite constraint failures
@@ -60,6 +63,8 @@ export const localSmsRepo = {
         ? txn.importStatus
         : 'pending';
 
+      const txnId = txn.id || `sms_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+
       try {
         const result = await db.runAsync(
           `INSERT OR IGNORE INTO local_bank_sms (
@@ -70,7 +75,7 @@ export const localSmsRepo = {
             created_at, updated_at
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
           [
-            txn.id || `sms_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+            txnId,
             txn.rawSmsId || null,
             txn.provider || 'unknown',
             txn.senderAddress || 'unknown',
@@ -95,12 +100,34 @@ export const localSmsRepo = {
 
         if (result.changes > 0) {
           insertedCount += result.changes;
+          newlyInserted.push({
+            ...txn,
+            id: txnId,
+            transactionRef: ref,
+            amount,
+            transactionFlow: flow,
+            timestamp,
+          });
         }
       } catch (rowErr) {
         console.warn('[LocalSmsRepo] Skipping malformed SMS record:', txn.transactionRef, rowErr);
       }
     }
 
+    return { insertedCount, newlyInserted };
+  },
+
+  /**
+   * Batch inserts parsed bank SMS transactions using INSERT OR IGNORE.
+   * Duplicate transaction_ref values are silently skipped by SQLite.
+   * Returns the count of newly inserted rows.
+   */
+  async insertOrIgnoreBatch(
+    transactions: ParsedBankTransaction[],
+    businessId: string,
+    branchId: string
+  ): Promise<number> {
+    const { insertedCount } = await this.insertOrIgnoreBatchWithResults(transactions, businessId, branchId);
     return insertedCount;
   },
 

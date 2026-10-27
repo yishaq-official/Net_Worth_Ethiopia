@@ -1,6 +1,7 @@
 import { fetchRawBankSms, type SmsFetchOptions } from '@/lib/sms-reader';
 import { bankParserRegistry } from '@/features/text-fetching/parsers/parser-registry';
 import { localSmsRepo } from '@/repositories/local-sms.repo';
+import { smsNotificationService } from './sms-notification.service';
 import { createDefaultProviderSummaries } from '@/constants/text-fetching';
 import type {
   BankProvider,
@@ -65,19 +66,28 @@ export const textFetchingService = {
     const parsedTransactions = bankParserRegistry.parseBatch(messages);
 
     // 3. Batch insert into SQLite with UNIQUE(transaction_ref) deduplication
-    const inserted = await localSmsRepo.insertOrIgnoreBatch(
+    const { insertedCount, newlyInserted } = await localSmsRepo.insertOrIgnoreBatchWithResults(
       parsedTransactions,
       businessId,
       branchId
     );
 
-    // 4. Query current state from database
+    // 4. Trigger instant notifications for newly discovered bank transactions
+    if (newlyInserted.length > 0) {
+      smsNotificationService
+        .notifyNewlyDiscoveredTransactions(newlyInserted, businessId)
+        .catch((err) => {
+          console.warn('[textFetchingService] Failed to dispatch SMS notifications:', err);
+        });
+    }
+
+    // 5. Query current state from database
     const transactions = await localSmsRepo.getTransactions(businessId);
 
     return {
       scanned: messages.length,
       parsed: parsedTransactions.length,
-      inserted,
+      inserted: insertedCount,
       transactions: transactions.length > 0 ? transactions : parsedTransactions,
     };
   },
