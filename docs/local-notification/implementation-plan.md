@@ -94,27 +94,26 @@ Provide a unified, highly aesthetic slide-down toast banner for instant foregrou
 
 ---
 
-### Phase 3: Customer Credit (Dube / Bidir) Reminders & Tab Badge
+### Phase 3: Customer Credit (Dube / Bidir) Reminders & Tab Badge `[COMPLETED]`
 
 #### Objective
 Alert the merchant to customer debts that are due today or overdue, both in the system tray and via a persistent badge on the Bidir bottom tab.
 
 #### Tasks
-1. **Deduplication Storage (`local-notification-log.repo.ts`)**:
-   - Table: `local_notification_log (id, dedupe_key, type, reference_id, notified_at)`
-   - Prevents sending multiple alerts for the same Dube on the same day.
-2. **Evaluator Logic (`dube-reminder.service.ts`)**:
-   - Query local SQLite database for debts where:
-     `status = 'pending' AND dueDate <= DATE('now')`
-   - Categorize:
-     - **Due Today**: Count and total amount.
-     - **Overdue**: Count and days overdue.
-   - If unnotified today, schedule/dispatch local notification:
-     - 1 debt: *"Dube Due Today: Abebe Bikila (1,200 ETB)"*
-     - Multiple: *"3 Customer Debts Due Today: Totaling 8,450 ETB. Tap to review."*
-3. **Tab Badge Counter (`bottom-tab-bar.tsx`)**:
-   - Calculate total overdue + due today count from `useBidrStore`.
-   - Render an amber/red numeric bubble over the `Bidir` tab icon if count > 0.
+1. [x] **Deduplication Storage (`local-notification-log.repo.ts`)**:
+   - Table: `local_notification_log (id, dedupe_key, type, reference_id, notified_at)` added in SQLite migration v5.
+   - Prevents sending multiple alerts for the same Dube on the same day (`hasBeenNotifiedToday`).
+   - Automatically prunes old logs (> 30 days) to keep local storage lightweight.
+2. [x] **Evaluator Logic (`dube-reminder.service.ts`)**:
+   - Queries local SQLite database for customer credit where:
+     `status = 'pending' AND sale_type = 'dube' AND due_date IS NOT NULL AND date(due_date) <= date('now')`
+   - Categorizes due today vs overdue count & sum.
+   - Dispatches system notification via `triggerInstantLocalNotification` on `NOTIFICATION_CHANNELS.DUBE_REMINDERS.id`.
+   - Dispatches in-app warning toast with tap-to-act *"View Debt Notebook"* button.
+   - Integrated into `useLocalNotifications` lifecycle watcher to run once per day per active business on app startup.
+3. [x] **Tab Badge Counter (`bottom-tab-bar.tsx`)**:
+   - Retrieves live `overdueCount` and `dueSoonCount` from `useBidrStore`.
+   - Renders a red numeric bubble (`#DC2626`) for overdue debts, or amber (`#D97706`) for debts due today/soon over the `Debt / Bidr` bottom tab icon.
 
 ---
 
