@@ -14,7 +14,7 @@
 
 ---
 
-## The Pitch
+## The Research
 
 In Ethiopia and across sub-Saharan Africa, micro, small, and medium enterprises (MSMEs) drive over 80% of urban employment and 90% of private sector commerce. Yet over 85% of these merchants cannot secure working capital credit from commercial banks.
 
