@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/hooks/use-theme';
+import { useBidrStore } from '@/store/bidr-store';
 
 export interface BottomTabBarProps {
   state: {
@@ -282,6 +283,12 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
   const insets = useSafeAreaInsets();
   const colors = useTheme();
 
+  // Dynamic debt alert counts from Bidr store
+  const bidrSummary = useBidrStore((state) => state.summary);
+  const overdueCount = bidrSummary?.overdueCount ?? 0;
+  const dueSoonCount = bidrSummary?.dueSoonCount ?? 0;
+  const bidrAlertCount = overdueCount + dueSoonCount;
+
   // Ethiopian Forest Emerald primary brand color
   const activeColor = colors.primary;
   const inactiveColor = '#9CA3AF';
@@ -373,6 +380,18 @@ export function BottomTabBar({ state, descriptors, navigation }: BottomTabBarPro
                 ]}
               >
                 {renderIcon()}
+                {route.name === 'bidr' && bidrAlertCount > 0 ? (
+                  <View
+                    style={[
+                      styles.tabBadge,
+                      overdueCount > 0 ? styles.tabBadgeOverdue : styles.tabBadgeDueSoon,
+                    ]}
+                  >
+                    <Text style={styles.tabBadgeText}>
+                      {bidrAlertCount > 99 ? '99+' : bidrAlertCount}
+                    </Text>
+                  </View>
+                ) : null}
               </View>
               <Text
                 style={[
@@ -420,12 +439,39 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   iconBadgeContainer: {
+    position: 'relative',
     paddingHorizontal: 14,
     paddingVertical: 4,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 3,
+  },
+  tabBadge: {
+    position: 'absolute',
+    top: 1,
+    right: 8,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    paddingHorizontal: 3.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF',
+  },
+  tabBadgeOverdue: {
+    backgroundColor: '#DC2626',
+  },
+  tabBadgeDueSoon: {
+    backgroundColor: '#D97706',
+  },
+  tabBadgeText: {
+    fontFamily: 'Lexend_700Bold',
+    fontSize: 9,
+    color: '#FFFFFF',
+    lineHeight: 11,
+    textAlign: 'center',
   },
   tabLabel: {
     fontFamily: 'Lexend_500Medium',

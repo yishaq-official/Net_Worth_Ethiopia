@@ -80,6 +80,14 @@ export interface SyncMetadataRow {
   updated_at: string;
 }
 
+export interface LocalNotificationLogRow {
+  id: string;
+  dedupe_key: string;
+  type: 'dube_reminder' | 'payment_alert' | 'milestone';
+  reference_id: string | null;
+  notified_at: string;
+}
+
 export interface LocalBankSmsRow {
   id: string;
   raw_sms_id: string | null;
@@ -303,4 +311,16 @@ CREATE TABLE IF NOT EXISTS local_staff_assignment (
 CREATE INDEX IF NOT EXISTS idx_local_staff_biz ON local_staff_assignment(business_id);
 CREATE INDEX IF NOT EXISTS idx_local_staff_branch ON local_staff_assignment(branch_id);
 CREATE INDEX IF NOT EXISTS idx_local_staff_email ON local_staff_assignment(email);
+
+-- 9. Local Notification Log Table (On-device deduplication)
+CREATE TABLE IF NOT EXISTS local_notification_log (
+  id TEXT PRIMARY KEY NOT NULL,
+  dedupe_key TEXT UNIQUE NOT NULL,
+  type TEXT NOT NULL,
+  reference_id TEXT,
+  notified_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_local_notif_key ON local_notification_log(dedupe_key);
+CREATE INDEX IF NOT EXISTS idx_local_notif_date ON local_notification_log(notified_at);
 `;

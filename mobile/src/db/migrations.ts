@@ -1,7 +1,7 @@
 import { getDatabase, isSQLiteAvailable } from './client';
 import { CREATE_TABLES_SQL } from './schema';
 
-export const CURRENT_SCHEMA_VERSION = 4;
+export const CURRENT_SCHEMA_VERSION = 5;
 
 /**
  * Runs pending database migrations using SQLite user_version pragma.
@@ -26,7 +26,7 @@ export async function initLocalDatabase(): Promise<void> {
     console.log('[SQLite Migrations] Running initial migration (version 0 -> 1)...');
     await db.execAsync(`
       ${CREATE_TABLES_SQL}
-      PRAGMA user_version = 4;
+      PRAGMA user_version = 5;
     `);
     console.log('[SQLite Migrations] Initial schema successfully applied.');
     return;
@@ -148,6 +148,25 @@ export async function initLocalDatabase(): Promise<void> {
     `);
     console.log('[SQLite Migrations] Version 4 schema migration applied successfully.');
   }
+
+  if (currentVersion < 5) {
+    console.log('[SQLite Migrations] Running migration (version 4 -> 5: local_notification_log)...');
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS local_notification_log (
+        id TEXT PRIMARY KEY NOT NULL,
+        dedupe_key TEXT UNIQUE NOT NULL,
+        type TEXT NOT NULL,
+        reference_id TEXT,
+        notified_at TEXT NOT NULL
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_local_notif_key ON local_notification_log(dedupe_key);
+      CREATE INDEX IF NOT EXISTS idx_local_notif_date ON local_notification_log(notified_at);
+
+      PRAGMA user_version = 5;
+    `);
+    console.log('[SQLite Migrations] Version 5 schema migration applied successfully.');
+  }
 }
 
 /**
@@ -167,6 +186,7 @@ export async function resetLocalDatabase(): Promise<void> {
     DROP TABLE IF EXISTS local_bank_sms;
     DROP TABLE IF EXISTS local_financial_snapshot;
     DROP TABLE IF EXISTS local_staff_assignment;
+    DROP TABLE IF EXISTS local_notification_log;
     PRAGMA user_version = 0;
   `);
 

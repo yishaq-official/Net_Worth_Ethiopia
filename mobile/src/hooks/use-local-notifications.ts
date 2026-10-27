@@ -10,10 +10,14 @@ import {
   type ScheduleNotificationOptions,
 } from '@/lib/local-notification-scheduler';
 import { setupNotificationChannels } from '@/lib/local-notification-channels';
+import { useBusinessStore } from '@/store/business-store';
+import { evaluateAndNotifyDubeDebts } from '@/service/dube-reminder.service';
+import { localNotificationLogRepo } from '@/repositories/local-notification-log.repo';
 
 export function useLocalNotifications() {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [isReady, setIsReady] = useState<boolean>(false);
+  const activeBusiness = useBusinessStore((state) => state.activeBusiness);
 
   useEffect(() => {
     if (Platform.OS === 'web') {
@@ -45,6 +49,14 @@ export function useLocalNotifications() {
       cleanup();
     };
   }, []);
+
+  // Evaluate customer credit (Dube) due dates once per day per active business
+  useEffect(() => {
+    if (!isReady || !activeBusiness?.id) return;
+
+    evaluateAndNotifyDubeDebts(activeBusiness.id);
+    localNotificationLogRepo.pruneOldLogs(30);
+  }, [isReady, activeBusiness?.id]);
 
   const triggerNotification = useCallback(
     async (payload: LocalNotificationPayload) => {
