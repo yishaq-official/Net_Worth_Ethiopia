@@ -11,11 +11,20 @@ export interface EnqueueMutationInput {
   createdAt?: string;
 }
 
+let onQueueChangeListener: (() => void) | null = null;
+
 /**
  * Repository for managing the transactional outbox queue (sync_queue table).
  * Captures offline mutations to be synchronized with the backend.
  */
 export const syncQueueRepo = {
+  /**
+   * Registers a listener callback invoked when queue items are added or removed.
+   */
+  setOnQueueChange(listener: () => void): void {
+    onQueueChangeListener = listener;
+  },
+
   /**
    * Enqueues a mutation into the sync_queue.
    * Can accept an existing transaction database instance for atomic commits.
@@ -40,6 +49,10 @@ export const syncQueueRepo = {
         now,
       ]
     );
+
+    try {
+      onQueueChangeListener?.();
+    } catch {}
   },
 
   /**
@@ -64,6 +77,10 @@ export const syncQueueRepo = {
       `DELETE FROM sync_queue WHERE mutation_id IN (${placeholders})`,
       mutationIds
     );
+
+    try {
+      onQueueChangeListener?.();
+    } catch {}
   },
 
   /**

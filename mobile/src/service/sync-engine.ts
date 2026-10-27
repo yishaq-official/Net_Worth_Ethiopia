@@ -6,13 +6,15 @@ import { localBidrRepo } from '../repositories/local-bidr.repo';
 import { localBusinessRepo } from '../repositories/local-business.repo';
 import { getDatabase, isSQLiteAvailable } from '../db/client';
 
-export type SyncEventType = 'sync_start' | 'sync_success' | 'sync_error';
+export type SyncEventType = 'sync_start' | 'sync_success' | 'sync_error' | 'queue_updated';
 
 export interface SyncEvent {
   type: SyncEventType;
   pendingCount: number;
   timestamp: string;
   error?: string;
+  pushedCount?: number;
+  pulledCount?: number;
 }
 
 export type SyncEventListener = (event: SyncEvent) => void;
@@ -31,12 +33,20 @@ class SyncEngine {
     };
   }
 
-  private notify(type: SyncEventType, pendingCount: number, error?: string) {
+  private notify(
+    type: SyncEventType,
+    pendingCount: number,
+    error?: string,
+    pushedCount?: number,
+    pulledCount?: number
+  ) {
     const event: SyncEvent = {
       type,
       pendingCount,
       timestamp: new Date().toISOString(),
       error,
+      pushedCount,
+      pulledCount,
     };
     this.listeners.forEach((listener) => {
       try {
@@ -45,6 +55,17 @@ class SyncEngine {
         console.warn('[Sync Engine] Error in event listener:', err);
       }
     });
+  }
+
+  /**
+   * Notifies subscribers of live changes in local pending mutation queue count.
+   */
+  async notifyQueueUpdated(): Promise<void> {
+    if (!isSQLiteAvailable()) return;
+    try {
+      const count = await syncQueueRepo.getPendingCount();
+      this.notify('queue_updated', count);
+    } catch {}
   }
 
   /**
@@ -225,7 +246,7 @@ class SyncEngine {
       }
 
       pendingCount = await syncQueueRepo.getPendingCount();
-      this.notify('sync_success', pendingCount);
+      this.notify('sync_success', pendingCount, undefined, pushedCount, pulledCount);
 
       return { pushedCount, pulledCount, pendingCount };
     } catch (err: any) {
@@ -240,3 +261,8 @@ class SyncEngine {
 }
 
 export const syncEngine = new SyncEngine();
+
+// Connect outbox queue updates to sync engine event bus
+syncQueueRepo.setOnQueueChange(() => {
+  syncEngine.notifyQueueUpdated();
+});

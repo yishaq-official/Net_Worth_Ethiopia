@@ -72,6 +72,13 @@ export function SyncStatusBadge() {
         hitSlop={6}
       >
         <RefreshCwIcon size={16} color="#059669" strokeWidth={2.2} />
+        {pendingCount > 0 ? (
+          <View style={[styles.countBadge, styles.syncingCountBadge]}>
+            <ThemedText style={styles.countText}>
+              {pendingCount > 99 ? '99+' : pendingCount}
+            </ThemedText>
+          </View>
+        ) : null}
       </Pressable>
     );
   }
@@ -87,7 +94,9 @@ export function SyncStatusBadge() {
       >
         <CloudUploadIcon size={17} color="#2563EB" strokeWidth={2.2} />
         <View style={[styles.countBadge, styles.pendingCountBadge]}>
-          <ThemedText style={styles.countText}>{pendingCount}</ThemedText>
+          <ThemedText style={styles.countText}>
+            {pendingCount > 99 ? '99+' : pendingCount}
+          </ThemedText>
         </View>
       </Pressable>
     );
@@ -153,20 +162,24 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 3,
+    paddingHorizontal: 3.5,
     borderWidth: 1.5,
     borderColor: '#FFFFFF',
   },
   offlineCountBadge: {
     backgroundColor: '#D97706',
   },
+  syncingCountBadge: {
+    backgroundColor: '#059669',
+  },
   pendingCountBadge: {
     backgroundColor: '#2563EB',
   },
   countText: {
+    fontFamily: 'Lexend_700Bold',
     color: '#FFFFFF',
     fontSize: 9,
-    fontWeight: '800',
     lineHeight: 11,
+    textAlign: 'center',
   },
 });

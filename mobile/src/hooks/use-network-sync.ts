@@ -5,6 +5,7 @@ import { syncEngine, type SyncEvent } from '@/service/sync-engine';
 import { syncQueueRepo } from '@/repositories/sync-queue.repo';
 import { useBusinessStore } from '@/store/business-store';
 import { isSQLiteAvailable } from '@/db/client';
+import { showInAppToast } from '@/store/toast-store';
 
 export interface NetworkSyncState {
   isOnline: boolean;
@@ -77,6 +78,16 @@ export function useNetworkSync(): NetworkSyncState {
       if (event.type === 'sync_success') {
         setLastSyncTime(event.timestamp);
         setLastError(null);
+
+        // Display subtle toast when offline mutations are successfully pushed to cloud
+        if (event.pushedCount && event.pushedCount > 0) {
+          showInAppToast({
+            title: 'Offline Sync Complete',
+            message: `All ${event.pushedCount} offline update${event.pushedCount === 1 ? '' : 's'} synced to cloud.`,
+            variant: 'payment',
+            duration: 3500,
+          });
+        }
       } else if (event.type === 'sync_error') {
         setLastError(event.error ?? 'Sync failed');
       }
